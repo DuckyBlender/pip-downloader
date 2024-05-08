@@ -12,6 +12,14 @@ Globals:
     MemorySize: 128
 
 Resources:
+  x86bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: x86-pip-downloader
+  armbucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: arm64-pip-downloader
   x86APILambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -46,14 +54,7 @@ Resources:
           Properties:
             Path: /arm64
             Method: get
-  x86bucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: x86-pip-downloader
-  armbucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: arm64-pip-downloader
+
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
