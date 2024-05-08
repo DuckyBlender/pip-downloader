@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  pip-downloader
+
+  Sample SAM Template for pip-downloader
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 128
+
+Resources:
+  x86APILambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: code/
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      Architectures:
+        - x86_64
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref x86bucket
+      Events:
+        x64Api:
+          Type: Api
+          Properties:
+            Path: /x86
+            Method: get
+  armAPILambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: code/
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      Architectures:
+        - arm64
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref armbucket
+      Events:
+        arm64Api:
+          Type: Api
+          Properties:
+            Path: /arm64
+            Method: get
+  x86bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: x86-pip-downloader
+  armbucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: arm64-pip-downloader
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  x86Api:
+    Description: "API Gateway endpoint URL for Prod stage for x86"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/x86/"
+
+  armApi:
+    Description: "API Gateway endpoint URL for Prod stage for arm"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/arm/"
+
+  x86Bucket:
+    Description: "S3 Bucket for x86"
+    Value: !Ref x86bucket
+
+  armBucket:
+    Description: "S3 Bucket for arm"
+    Value: !Ref armbucket
+
